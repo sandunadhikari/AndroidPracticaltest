@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/margin20">
+
+    <TextView
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        style="@style/viewParent"
+        android:text="Register"
+        android:textSize="@dimen/headerTextSize"
+        android:textColor="@color/black"
+        android:textStyle="bold" />
+    
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/nameText"
+        android:hint="@string/username"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/emailText"
+        android:hint="@string/email"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/passwordText"
+        android:hint="@string/password"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/saveButton"
+        android:text="@string/saveButton"
+        android:layout_gravity="center_horizontal"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="20dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Already Have an Account? "
+            android:textColor="@color/black"
+            android:textSize="12sp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/login"
+            android:text="Login Now"
+            android:textColor="@color/teal_200"
+            android:textSize="12sp"
+            android:clickable="true"/>
+    </LinearLayout>
+
+</LinearLayout>

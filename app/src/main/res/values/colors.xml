@@ -15,4 +15,18 @@
     <color name="whiteTextColor">#fff</color>
     <color name="colorLoginPrimaryDark">#FDFFFF</color>
     <color name="designMainColor">#13D3B4</color>
+
+    <!--colors for light mode-->
+    <color name="contentBodyColor">#FCFCFC</color>
+    <color name="contentTextColor">#020000</color>
+    <color name="miniTitleColor">#6F6A6A</color>
+    <color name="bottomNavigationBackground">#F7F7F7</color>
+    <color name="contentStatusBar">#DCDCDC</color>
+    <color name="miniTitle">#0F0101</color>
+    <color name="miniDescription">#707070</color>
+
+    <!--gradient colors-->
+    <color name="gradientLightBlue">#FF1944F8</color>
+    <color name="gradientDarkBlue">#FF6A39F4</color>
+    <color name="gradientLightYellow">#FFA72F</color>
 </resources>

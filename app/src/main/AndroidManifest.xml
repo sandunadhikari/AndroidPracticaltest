@@ -10,9 +10,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PracticalTest">
         <activity
+            android:name=".SearchActivity"
+            android:exported="false" />
+        <activity
+            android:name=".HomeActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
-            android:theme="@style/LoginTheme"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/LoginTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

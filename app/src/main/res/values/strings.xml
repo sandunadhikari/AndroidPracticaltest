@@ -7,4 +7,6 @@
     <string name="password">Password</string>
     <string name="saveButton">Save</string>
     <string name="loginButton">Login</string>
+    <string name="default_news_title">Search bar for search news with a search list</string>
+    <string name="default_news_description">Breaking News Section in the dashboard (Show Image and text as cards. Get the current top headlines for a country or category) with a view all option</string>
 </resources>

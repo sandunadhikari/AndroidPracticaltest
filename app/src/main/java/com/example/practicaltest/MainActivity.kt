@@ -67,6 +67,10 @@ class MainActivity : AppCompatActivity() {
             if(!handler.userExsit(userEmail)) {
                 handler.insertUserData(userName, userEmail, userPassword)
                 Toast.makeText(this, "Successfully added!", Toast.LENGTH_LONG).show()
+                binding.registrationLayout.nameText.text.clear()
+                binding.registrationLayout.emailText.text.clear()
+                binding.registrationLayout.passwordText.text.clear()
+                showLoginIN()
             }else{
                 Toast.makeText(this,"Email already exist",Toast.LENGTH_LONG).show()
             }

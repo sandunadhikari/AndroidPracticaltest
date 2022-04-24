@@ -62,6 +62,10 @@ class HomeActivity : AppCompatActivity(), CardItemClicked {
         }
     }
 
+    override fun onBackPressed(){
+
+    }
+
     private fun callAllbreaking(){
         val intent = Intent(this@HomeActivity,SearchActivity::class.java)
         intent.putExtra("BREAKINGNEWS",brakingUrl)

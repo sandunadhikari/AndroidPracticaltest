@@ -20,7 +20,8 @@
             android:queryHint="Search Here..."
             android:iconifiedByDefault="false"
             android:elevation="5dp"
-            android:background="@drawable/bg_round"/>
+            android:background="@drawable/bg_round"
+            android:focusable="true"/>
 
         <Spinner
             android:id="@+id/spinner"

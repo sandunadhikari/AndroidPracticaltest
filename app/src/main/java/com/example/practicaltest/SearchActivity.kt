@@ -39,7 +39,6 @@ class SearchActivity : AppCompatActivity(), NewsItemClicked, CatItemClicked {
         setContentView(R.layout.activity_search)
 
         val recyclerView: RecyclerView = findViewById(R.id.recycle)
-        val searchView: SearchView = findViewById(R.id.search_bar)
         val cat_recycle: RecyclerView = findViewById(R.id.cat_recycle)
 
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -125,8 +124,29 @@ class SearchActivity : AppCompatActivity(), NewsItemClicked, CatItemClicked {
             }
         }
 
-
+        performSearch()
     }
+
+    private fun performSearch() {
+        val searchView: SearchView = findViewById(R.id.search_bar)
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                search(query)
+                searchView.clearFocus()
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                //search(newText)
+                return true
+            }
+        })
+    }
+
+    private fun search(query: String?) {
+        fetchData("${BASE_URL}/v2/everything?q=${query}&sortBy=popularity&apiKey=${API_KEY}")
+    }
+
     private fun fetchData(url :String) {
         var mainUrl  = ""
         if(url.isEmpty()){
@@ -169,42 +189,6 @@ class SearchActivity : AppCompatActivity(), NewsItemClicked, CatItemClicked {
         MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest)
     }
 
-    private fun queryData() {
-
-        val url = "https://newsapi.org/v2/everything?q=${searchValue}&apiKey=86f63ff0d3e5461ebd6909e54dbe6f9f"
-        val jsonObjectRequest = object : JsonObjectRequest(
-            Request.Method.GET,
-            url,
-            null,
-            {
-                val newsJsonArray = it.getJSONArray("articles")
-                val newsArray = ArrayList<News>()
-                for (i in 0 until newsJsonArray.length()) {
-                    val newsJsonObject = newsJsonArray.getJSONObject(i)
-                    val news = News(
-                        newsJsonObject.getString("title"),
-                        newsJsonObject.getString("author"),
-                        newsJsonObject.getString("url"),
-                        newsJsonObject.getString("urlToImage"),
-                        newsJsonObject.getString("description")
-                    )
-                    newsArray.add(news)
-                }
-
-                mAdapter.updateNews(newsArray)
-            },
-            {
-                // Toast.makeText(this, "volly exception", Toast.LENGTH_SHORT).show()
-            }
-        ) {
-            override fun getHeaders(): MutableMap<String, String> {
-                val headers = HashMap<String, String>()
-                headers["User-Agent"] = "Mozilla/5.0"
-                return headers
-            }
-        }
-        MySingleton.getInstance(this).addToRequestQueue(jsonObjectRequest)
-    }
 
     override fun onItemClicked(item: News) {
         val intent = Intent(this@SearchActivity,DetailActivity::class.java)

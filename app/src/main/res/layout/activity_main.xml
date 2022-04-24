@@ -20,7 +20,7 @@
                 android:adjustViewBounds="true"
                 android:cropToPadding="true"
                 android:layout_gravity="center_horizontal"
-                android:src="@drawable/login_logo"
+                android:src="@drawable/newsicon"
                 android:layout_margin="10dp"/>
 
             <include layout="@layout/user_registration"

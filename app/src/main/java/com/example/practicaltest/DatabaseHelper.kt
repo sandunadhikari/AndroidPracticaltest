@@ -90,7 +90,7 @@ class DatabaseHelper(context: Context):SQLiteOpenHelper(context,DATABASE_NAME,FA
         values.put(KEY_NAME, employee.name)
         values.put(KEY_EMAIL, employee.email)
         values.put(KEY_PASSWORD, employee.password)
-        values.put(KEY_LOGIN, 0)
+        values.put(KEY_LOGIN, employee.login)
 
         // updating row
         db.update(TABLE_NAME, values, "$KEY_EMAIL = ?",

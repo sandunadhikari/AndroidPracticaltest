@@ -45,10 +45,10 @@ class HomeActivity : AppCompatActivity(), CardItemClicked {
         val editor = pref.edit()
         editor.putString("EMAIL",userEmail)
         editor.commit()
-
-
-
-
+        if (userEmail != null) {
+            logData(userEmail)
+        }
+        
         val searchView: LinearLayout = findViewById(R.id.search_view)
 
         val allbreaking: Button = findViewById(R.id.allbreaking)
@@ -108,7 +108,7 @@ class HomeActivity : AppCompatActivity(), CardItemClicked {
                 val pref = getPreferences(Context.MODE_PRIVATE)
                 val user_mail = pref.getString("EMAIL","")
                 if (user_mail != null) {
-                    checkData(user_mail)
+                    logoutData(user_mail)
                 }
             }
             .setNegativeButton("No") { dialog, id ->
@@ -119,7 +119,7 @@ class HomeActivity : AppCompatActivity(), CardItemClicked {
         alert.show()
     }
 
-    private fun checkData(useremail:String){
+    private fun logoutData(useremail:String){
         listUsers = ArrayList()
 
         GlobalScope.launch(Dispatchers.IO) {
@@ -129,7 +129,7 @@ class HomeActivity : AppCompatActivity(), CardItemClicked {
             if(listUsers.size > 0) {
                 val myEmployee: Employee? = listUsers.find { it.email == useremail }
                 if (myEmployee != null) {
-                    handler.updateUser(myEmployee)
+                    handler.updateUser(Employee(myEmployee.id,myEmployee.name,myEmployee.email,myEmployee.password,0))
                 }
             }
             launch (Dispatchers.Main){
@@ -141,6 +141,25 @@ class HomeActivity : AppCompatActivity(), CardItemClicked {
                 val intent = Intent(applicationContext,MainActivity::class.java)
                 startActivity(intent)
                 finish()
+            }
+        }
+    }
+
+    private fun logData(useremail:String){
+        listUsers = ArrayList()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            val result= handler.getAllUser()
+            listUsers.clear()
+            listUsers.addAll(result!!)
+            if(listUsers.size > 0) {
+                val myEmployee: Employee? = listUsers.find { it.email == useremail }
+                if (myEmployee != null) {
+                    handler.updateUser(Employee(myEmployee.id,myEmployee.name,myEmployee.email,myEmployee.password,1))
+                }
+            }
+            launch (Dispatchers.Main){
+
             }
         }
     }

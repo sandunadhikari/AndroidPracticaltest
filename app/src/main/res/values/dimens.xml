@@ -3,4 +3,5 @@
     <dimen name="headerTextSize">22sp</dimen>
     <dimen name="margin16">16dp</dimen>
     <dimen name="margin20">20dp</dimen>
+    <dimen name="normalPadding">20dp</dimen>
 </resources>

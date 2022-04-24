@@ -1,11 +1,17 @@
 package com.example.practicaltest
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -13,20 +19,35 @@ import com.android.volley.Request
 import com.android.volley.toolbox.JsonObjectRequest
 import com.example.practicaltest.Adapters.CardAdapter
 import com.example.practicaltest.Adapters.CardItemClicked
+import com.example.practicaltest.Models.Employee
 import com.example.practicaltest.Models.News
 import com.example.practicaltest.Util.Constants.Companion.API_KEY
 import com.example.practicaltest.Util.Constants.Companion.BASE_URL
 import com.example.practicaltest.Util.Constants.Companion.brakingUrl
 import com.example.practicaltest.Util.Constants.Companion.topUrl
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class HomeActivity : AppCompatActivity(), CardItemClicked {
     private lateinit var cAdapter: CardAdapter
     private lateinit var bAdapter: CardAdapter
-
+    private lateinit var listUsers: MutableList<Employee>
+    private lateinit var handler: DatabaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
+        handler = DatabaseHelper(this)
+
+        val userEmail = intent.getStringExtra("Email")
+        val pref = getPreferences(Context.MODE_PRIVATE)
+        val editor = pref.edit()
+        editor.putString("EMAIL",userEmail)
+        editor.commit()
+
+
+
 
         val searchView: LinearLayout = findViewById(R.id.search_view)
 
@@ -64,6 +85,64 @@ class HomeActivity : AppCompatActivity(), CardItemClicked {
 
     override fun onBackPressed(){
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.logout -> navigateLogout(item)
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun navigateLogout(item: MenuItem) {
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage("Are you sure you want to Logout?")
+            .setCancelable(false)
+            .setPositiveButton("Yes") { dialog, id ->
+                // Delete selected note from database
+                val pref = getPreferences(Context.MODE_PRIVATE)
+                val user_mail = pref.getString("EMAIL","")
+                if (user_mail != null) {
+                    checkData(user_mail)
+                }
+            }
+            .setNegativeButton("No") { dialog, id ->
+                // Dismiss the dialog
+                dialog.dismiss()
+            }
+        val alert = builder.create()
+        alert.show()
+    }
+
+    private fun checkData(useremail:String){
+        listUsers = ArrayList()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            val result= handler.getAllUser()
+            listUsers.clear()
+            listUsers.addAll(result!!)
+            if(listUsers.size > 0) {
+                val myEmployee: Employee? = listUsers.find { it.email == useremail }
+                if (myEmployee != null) {
+                    handler.updateUser(myEmployee)
+                }
+            }
+            launch (Dispatchers.Main){
+                val pref = getPreferences(Context.MODE_PRIVATE)
+                val editor = pref.edit()
+                editor.clear()
+                editor.commit()
+
+                val intent = Intent(applicationContext,MainActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+        }
     }
 
     private fun callAllbreaking(){

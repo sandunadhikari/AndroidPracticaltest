@@ -4,24 +4,27 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.example.practicaltest.Models.Employee
 
 class DatabaseHelper(context: Context):SQLiteOpenHelper(context,DATABASE_NAME,FACTORY,DATABASE_VERSION) {
     companion object{
         internal val FACTORY  = null
         private val DATABASE_VERSION = 1
-        private val DATABASE_NAME = "userDB"
+        private val DATABASE_NAME = "UserManager"
         private val TABLE_NAME = "UserTable"
         private val KEY_ID = "id"
         private val KEY_NAME = "name"
         private val KEY_EMAIL = "email"
         private val KEY_PASSWORD = "password"
+        private val KEY_LOGIN = "login"
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
         val CREATE_CONTACTS_TABLE = ("CREATE TABLE " + TABLE_NAME + "("
                 + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_NAME + " TEXT,"
                 + KEY_EMAIL + " TEXT,"
-                + KEY_PASSWORD + " TEXT" + ")")
+                + KEY_PASSWORD + " TEXT,"
+                + KEY_LOGIN + " INTEGER DEFAULT 0" + ")")
         db?.execSQL(CREATE_CONTACTS_TABLE)
     }
 
@@ -30,37 +33,136 @@ class DatabaseHelper(context: Context):SQLiteOpenHelper(context,DATABASE_NAME,FA
         onCreate(db)
     }
 
-    fun insertUserData(name: String,email: String,password: String){
-        val db: SQLiteDatabase = writableDatabase
-        val values: ContentValues = ContentValues()
-        values.put(KEY_NAME,name)
-        values.put(KEY_EMAIL,email)
-        values.put(KEY_PASSWORD,password)
-        db.insert(TABLE_NAME,null,values)
+
+    fun getAllUser(): List<Employee> {
+
+        // array of columns to fetch
+        val columns = arrayOf(KEY_ID, KEY_NAME, KEY_EMAIL, KEY_PASSWORD,KEY_LOGIN)
+
+        // sorting orders
+        val sortOrder = "$KEY_NAME ASC"
+        val userList = ArrayList<Employee>()
+
+        val db = this.readableDatabase
+
+        // query the user table
+        val cursor = db.query(TABLE_NAME, //Table to query
+            columns,            //columns to return
+            null,     //columns for the WHERE clause
+            null,  //The values for the WHERE clause
+            null,      //group the rows
+            null,       //filter by row groups
+            sortOrder)         //The sort order
+        if (cursor.moveToFirst()) {
+            do {
+                val user = Employee(id = cursor.getString(cursor.getColumnIndex(KEY_ID)).toInt(),
+                    name = cursor.getString(cursor.getColumnIndex(KEY_NAME)),
+                    email = cursor.getString(cursor.getColumnIndex(KEY_EMAIL)),
+                    password = cursor.getString(cursor.getColumnIndex(KEY_PASSWORD)),
+                    login = cursor.getInt(cursor.getColumnIndex(KEY_LOGIN))
+                )
+
+                userList.add(user)
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        db.close()
+        return userList
+    }
+
+    fun addUser(employee: Employee) {
+        val db = this.writableDatabase
+
+        val values = ContentValues()
+        values.put(KEY_NAME, employee.name)
+        values.put(KEY_EMAIL, employee.email)
+        values.put(KEY_PASSWORD, employee.password)
+        values.put(KEY_LOGIN, employee.login)
+        // Inserting Row
+        db.insert(TABLE_NAME, null, values)
         db.close()
     }
 
-    fun userPresent(email: String,password: String): Boolean{
-        val db = writableDatabase
-        val query = ("SELECT * FROM "+ TABLE_NAME +" WHERE "+ KEY_EMAIL +" = '$email' AND "+ KEY_PASSWORD +" = '$password'")
-        val cursor = db.rawQuery(query,null)
-        if (cursor.count <= 0){
-            cursor.close()
-            return false
-        }
-        cursor.close()
-        return true
+    fun updateUser(employee: Employee) {
+        val db = this.writableDatabase
+
+        val values = ContentValues()
+        values.put(KEY_NAME, employee.name)
+        values.put(KEY_EMAIL, employee.email)
+        values.put(KEY_PASSWORD, employee.password)
+        values.put(KEY_LOGIN, 0)
+
+        // updating row
+        db.update(TABLE_NAME, values, "$KEY_EMAIL = ?",
+            arrayOf(employee.email.toString()))
+        db.close()
     }
 
-    fun userExsit(email: String): Boolean{
-        val db = writableDatabase
-        val query = ("SELECT * FROM "+ TABLE_NAME +" WHERE "+ KEY_EMAIL +" = '$email'")
-        val cursor = db.rawQuery(query,null)
-        if (cursor.count <= 0){
-            cursor.close()
-            return false
-        }
+    fun checkUser(email: String): Boolean {
+
+        // array of columns to fetch
+        val columns = arrayOf(KEY_ID)
+        val db = this.readableDatabase
+
+        // selection criteria
+        val selection = "$KEY_EMAIL = ?"
+
+        // selection argument
+        val selectionArgs = arrayOf(email)
+
+
+        val cursor = db.query(TABLE_NAME, //Table to query
+            columns,        //columns to return
+            selection,      //columns for the WHERE clause
+            selectionArgs,  //The values for the WHERE clause
+            null,  //group the rows
+            null,   //filter by row groups
+            null)  //The sort order
+
+
+        val cursorCount = cursor.count
         cursor.close()
-        return true
+        db.close()
+
+        if (cursorCount > 0) {
+            return true
+        }
+
+        return false
     }
+
+    fun checkUser(email: String, password: String): Boolean {
+
+        // array of columns to fetch
+        val columns = arrayOf(KEY_ID)
+
+        val db = this.readableDatabase
+
+        // selection criteria
+        val selection = "$KEY_EMAIL = ? AND $KEY_PASSWORD = ?"
+
+        // selection arguments
+        val selectionArgs = arrayOf(email, password)
+
+
+        val cursor = db.query(
+            TABLE_NAME, //Table to query
+            columns, //columns to return
+            selection, //columns for the WHERE clause
+            selectionArgs, //The values for the WHERE clause
+            null,  //group the rows
+            null, //filter by row groups
+            null) //The sort order
+
+        val cursorCount = cursor.count
+        cursor.close()
+        db.close()
+
+        if (cursorCount > 0)
+            return true
+
+        return false
+
+    }
+
 }
